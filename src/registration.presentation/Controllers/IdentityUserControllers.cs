@@ -1,0 +1,74 @@
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using registration.presentation.Dto;
+using registration.presentation.Options;
+
+namespace registration.presentation.Controllers;
+
+public static class IdentityUserControllers
+{
+    public static IEndpointRouteBuilder MapIdentityEndpoints(this IEndpointRouteBuilder app)
+    {
+        app.MapPost("signup", async (
+            UserManager<AppUser> userManager,
+            [FromBody] UserRegistrationDto registrationModel
+        ) =>
+        {
+            var newUser = new AppUser()
+            {
+                Email = registrationModel.Email,
+                UserName = registrationModel.Email,
+                Fullname = registrationModel.FullName
+            };
+            var result = await userManager.CreateAsync(newUser, registrationModel.Password);
+
+            if (result.Succeeded)
+            {
+                return Results.Ok(result);
+            }
+            else
+            {
+                return Results.BadRequest(result);
+            }
+        });
+
+        app.MapPost("signin", async (
+            UserManager<AppUser> userManager,
+            [FromBody] UserLoginDto loginModel,
+            IOptions<AppSettings> options
+        ) =>
+        {
+            var user = await userManager.FindByEmailAsync(loginModel.Email);
+            if (user != null && await userManager.CheckPasswordAsync(user, loginModel.Password))
+            {
+                var signingKey =
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Value.JWTSecret));
+                var tokenDescriptor = new SecurityTokenDescriptor()
+                {
+                    Subject = new ClaimsIdentity(
+                    [
+                        new Claim("UserId", user.Id)
+                    ]),
+                    Expires = DateTime.UtcNow.AddMinutes(10),
+                    SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256Signature)
+                };
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+
+                var token = tokenHandler.WriteToken(securityToken);
+                return Results.Ok(new { token });
+            }
+            else
+            {
+                return Results.BadRequest(new { message = "username or password is incorrect" });
+            }
+        });
+        return app;
+    }
+}

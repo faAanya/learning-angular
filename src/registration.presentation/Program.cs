@@ -1,13 +1,26 @@
-var builder = WebApplication.CreateBuilder(args);
+using registration.presentation.Controllers;
+using registration.presentation.Extensions;
 
-builder.Services.AddOpenApi();
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers();
+
+builder.Services.AddSwaggerExplorer()
+                .InjectDbContext(builder.Configuration)
+                .AddAppConfiguration(builder.Configuration)
+                .AddIdentityHandlers()
+                .ConfigureIdentityOptions()
+                .AddIdentityAuth(builder.Configuration);
+
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+app.ConfigureSwaggerExplorer();
+app.ConfigureCors(builder.Configuration);
 
+app.UseAuthentication();
+app.UseAuthorization();
 
+app.MapControllers();
+app.MapIdentityApi<AppUser>();
+app.MapIdentityEndpoints();
 app.Run();
