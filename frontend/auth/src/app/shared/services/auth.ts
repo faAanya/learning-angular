@@ -6,7 +6,6 @@ import { Injectable } from '@angular/core';
 })
 export class Auth {
   baseUrl = "http://localhost:5120/"
-
   constructor(private http: HttpClient){}
 
   createUser(formData: any){

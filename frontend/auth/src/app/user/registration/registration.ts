@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { FirstKeyPipe } from '../../shared/pipes/first-key-pipe';
 import { Auth } from '../../shared/services/auth';
-
+import {ToastrService} from 'ngx-toastr';
 @Component({
   selector: 'app-registration',
   standalone: true,
@@ -17,12 +17,13 @@ export class Registration {
 
   constructor(
     public formBuilder: FormBuilder,
-    private service: Auth
+    private service: Auth,
+    private toastr: ToastrService
   ){
     this.form = this.formBuilder.group({
     fullName:['', Validators.required],
     email:['', [
-      Validators.required, 
+      Validators.required,
       Validators.email]],
     password:['',[
       Validators.required,
@@ -44,7 +45,7 @@ export class Registration {
     }
 
     return null;
-   } 
+   }
 
   onSubmit(){
   this.isSubmitted = true;
@@ -55,10 +56,30 @@ export class Registration {
           if(res.succeeded){
             this.form.reset();
             this.isSubmitted = false;
+            this.toastr.success("New user created!", "Registration Successful")
           }
-          console.log(res);
+
         },
-        error: err => console.log('error', err)
+        error: err => {
+          if(err.error.errors)
+          err.error.errors.forEach((x: any)=>{
+            switch(x.code){
+              case "DuplicateUserName":
+                this.toastr.error('UserName already exists!', 'Registration Failed');
+                break;
+              case "DuplicateEmail":
+                this.toastr.error('Email already exists!', 'Registration Failed');
+                break;
+
+              default:
+                this.toastr.error('Contact developers', 'Registration Failed');
+                console.log(x)
+                break;
+        }
+      })
+          else
+            console.log("errors: ", err)
+    }
       });
   }
 }
@@ -66,6 +87,6 @@ export class Registration {
   hasDisplayableError(controlName: string) : Boolean{
     const control = this.form.get(controlName);
 
-    return Boolean(control?.invalid) && (this.isSubmitted || Boolean(control?.touched));
+    return Boolean(control?.invalid) && (this.isSubmitted || Boolean(control?.touched) || Boolean(control?.dirty));
   }
 }

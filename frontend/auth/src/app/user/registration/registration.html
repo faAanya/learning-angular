@@ -10,7 +10,7 @@
     </div>
     <div class="mb-3">
         <input class="form-control bg-body-secondary" placeholder="Email" formControlName ="email">
-        <div class="error-feedback" 
+        <div class="error-feedback"
         *ngIf = "hasDisplayableError('email')">
             <div  *ngIf = "form.controls.email.hasError('required')">
                 Please enter your email
@@ -39,8 +39,10 @@
   </div>
 </div>
     <div class="mb-3">
-        <input class="form-control bg-body-secondary" placeholder="Confirm Password" formControlName ="confirmPassword">
-         <div class="error-feedback" *ngIf = "hasDisplayableError('confirmPassword') && form.controls.confirmPassword.hasError('passwordMisMatch')">
+        <input class="form-control bg-body-secondary" placeholder="Confirm Password"
+               formControlName ="confirmPassword">
+         <div class="error-feedback"
+              *ngIf = "hasDisplayableError('confirmPassword') && form.controls.confirmPassword.hasError('passwordMisMatch')">
             Passwords don't match
         </div>
     </div>
