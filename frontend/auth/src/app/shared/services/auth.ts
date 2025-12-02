@@ -11,4 +11,10 @@ export class Auth {
   createUser(formData: any){
     return this.http.post(this.baseUrl + 'signup', formData)
   }
+
+  signin(formData: any){
+    return this.http.post<string>(this.baseUrl + 'signin', formData, {
+      responseType: 'json' as const,
+    })
+  }
 }
