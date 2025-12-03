@@ -22,5 +22,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapIdentityApi<AppUser>();
-app.MapIdentityEndpoints();
+app.MapIdentityEndpoints()
+    .MapAccountEndpoints();
 app.Run();

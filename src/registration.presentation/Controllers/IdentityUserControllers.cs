@@ -35,7 +35,7 @@ public static class IdentityUserControllers
             {
                 return Results.BadRequest(result);
             }
-        });
+        }).AllowAnonymous();
 
         app.MapPost("signin", async (
             UserManager<AppUser> userManager,
@@ -68,7 +68,7 @@ public static class IdentityUserControllers
             {
                 return Results.BadRequest(new { message = "username or password is incorrect" });
             }
-        });
+        }).AllowAnonymous();
         return app;
     }
 }
