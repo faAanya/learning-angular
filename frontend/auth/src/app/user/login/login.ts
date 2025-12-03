@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {Router, RouterLink} from '@angular/router';
 import {Auth} from '../../shared/services/auth';
 import {ToastrService} from 'ngx-toastr';
+import {routes} from '../../app.routes';
 
 @Component({
   selector: 'app-login',
@@ -11,7 +12,7 @@ import {ToastrService} from 'ngx-toastr';
   templateUrl: './login.html',
   styles: ``,
 })
-export class Login {
+export class Login implements OnInit {
   form: any;
   isSubmitted: boolean = false;
 
@@ -25,6 +26,12 @@ export class Login {
     })
   }
 
+  ngOnInit(): void {
+        if(this.service.isLoggedIn()){
+          this.router.navigateByUrl('/dashboard');
+        }
+    }
+
   hasDisplayableError(controlName: string) : Boolean{
     const control = this.form.get(controlName);
 
@@ -37,7 +44,7 @@ export class Login {
     if(this.form.valid){
       this.service.signin(this.form.value).subscribe({
         next: (res:any) => {
-          localStorage.setItem('token', res.token);
+          this.service.saveToken(res.token);
           this.router.navigateByUrl('/dashboard');
           },
         error: (err:any) => {

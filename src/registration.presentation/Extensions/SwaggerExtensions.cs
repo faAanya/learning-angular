@@ -1,28 +1,59 @@
-﻿namespace registration.presentation.Extensions;
+﻿using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
 
-public static class SwaggerExtensions
+namespace registration.presentation.Extensions
 {
-    public static IServiceCollection AddSwaggerExplorer(this IServiceCollection services)
+    public static class SwaggerExtensions
     {
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
-
-        return services;
-    }
-    
-    public static WebApplication ConfigureSwaggerExplorer(this WebApplication app)
-    {
-        if (app.Environment.IsDevelopment())
+        public static IServiceCollection AddSwaggerExplorer(this IServiceCollection services)
         {
-            app.UseSwagger();
-
-            app.UseSwaggerUI(c =>
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen(options =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme.",
+                });
+            
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
             });
 
+            return services;
         }
+    
+        public static WebApplication ConfigureSwaggerExplorer(this WebApplication app)
+        {
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
 
-        return app;
-    }
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                });
+
+            }
+
+            return app;
+        }
+    } 
 }
+
