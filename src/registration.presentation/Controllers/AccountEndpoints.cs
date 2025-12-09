@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace registration.presentation.Controllers;
 
@@ -6,14 +8,23 @@ public static class AccountEndpoints
 {
     public static IEndpointRouteBuilder MapAccountEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/UserProfile", GetUserProfile);
+        endpoints.MapGet("/userProfile", GetUserProfile);
         
         return endpoints;
     }
 
     [Authorize]
-    private static string GetUserProfile(HttpContext context)
+    private static async Task<IResult> GetUserProfile(ClaimsPrincipal user,
+        UserManager<AppUser> userManager)
     {
-        return "userProfile";
+        string userId = user.Claims.First(x => x.Type == "UserId").Value;
+       
+        var userDetails = await userManager.FindByIdAsync(userId);
+        
+        return Results.Ok(new
+        {
+            Email = userDetails?.Email,
+            FullName = userDetails?.Fullname,
+        });
     }
 }
