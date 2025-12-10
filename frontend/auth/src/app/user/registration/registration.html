@@ -27,6 +27,36 @@
             </div>
         </div>
     </div>
+  <div class="mb-3">
+  <select class="form-select bg-body secondary" formControlName="role">
+    <option value="" disabled selected>Choose role</option>
+    <option *ngFor="let role of ROLES" [value]="role">
+      {{role}}
+    </option>
+  </select>
+  </div>
+  <div class="mb-3">
+    <select class="form-select bg-body secondary" formControlName="gender">
+      <option value="" disabled>Choose gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <input
+      type="date"
+      class="form-control bg-body-secondary"
+      formControlName="dateOfBirth"
+    />
+  </div>
+  <div class="mb-3">
+    <input
+      class="form-control bg-body-secondary"
+      formControlName="age"
+      placeholder="Age"
+      readonly
+    />
+  </div>
     <div class="mb-3">
   <input
     class="form-control bg-body-secondary"

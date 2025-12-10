@@ -5,6 +5,7 @@ import { FirstKeyPipe } from '../../shared/pipes/first-key-pipe';
 import { Auth } from '../../shared/services/auth';
 import {ToastrService} from 'ngx-toastr';
 import {Router, RouterLink} from '@angular/router';
+import {ROLES} from '../../shared/constants';
 
 @Component({
   selector: 'app-registration',
@@ -16,6 +17,8 @@ import {Router, RouterLink} from '@angular/router';
 export class Registration implements OnInit {
    form: any;
    isSubmitted: boolean = false;
+  protected readonly ROLES = ROLES;
+
 
   constructor(
     public formBuilder: FormBuilder,
@@ -31,8 +34,17 @@ export class Registration implements OnInit {
     password:['',[
       Validators.required,
       Validators.minLength(8)]],
-    confirmPassword:['']
+    confirmPassword:[''],
+      role:['', Validators.required],
+      gender:['', Validators.required],
+      dateOfBirth:['', Validators.required],
+      age:[{value: '', disabled:true}]
   }, {validators:this.passwordMatchValidator})
+
+    this.form.get('dateOfBirth')?.valueChanges.subscribe((dob:string) => {
+      const age = this.calculateAge(dob);
+      this.form.get('age')?.setValue(age);
+    });
   }
 
   ngOnInit(): void {
@@ -98,5 +110,19 @@ export class Registration implements OnInit {
 
     return Boolean(control?.invalid) &&
       (this.isSubmitted || Boolean(control?.touched) || Boolean(control?.dirty));
+  }
+
+  private calculateAge(dob: string): number {
+    const birthDate = new Date(dob);
+    const today = new Date();
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    return age;
   }
 }

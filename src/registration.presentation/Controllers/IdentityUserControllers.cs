@@ -23,10 +23,15 @@ public static class IdentityUserControllers
             {
                 Email = registrationModel.Email,
                 UserName = registrationModel.Email,
-                Fullname = registrationModel.FullName
+                Fullname = registrationModel.FullName,
+                Gender = registrationModel.Gender,
+                DateOfBirth = DateOnly.FromDateTime(DateTime.Now.AddYears(-registrationModel.Age)),
+                LibraryId =  registrationModel.LibraryId
             };
             var result = await userManager.CreateAsync(newUser, registrationModel.Password);
 
+            await userManager.AddToRoleAsync(newUser, registrationModel.Role);
+            
             if (result.Succeeded)
             {
                 return Results.Ok(result);
