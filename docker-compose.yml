@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppassword
+      POSTGRES_DB: appdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+
+  registration-api:
+    build:
+      context: ./src/registration.presentation
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Username=appuser;Password=apppassword;Database=appdb"
+    ports:
+      - "8080:8080"
+
+  registration-frontend:
+    build:
+      context: ./frontend/auth
+      dockerfile: Dockerfile
+    depends_on:
+      - registration-api
+    ports:
+      - "80:80"
+
+volumes:
+  pgdata:
