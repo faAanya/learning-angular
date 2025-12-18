@@ -20,17 +20,18 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Username=appuser;Password=apppassword;Database=appdb"
+      AppSettings__JWTSecret: "DEV_SUPER_SECRET_KEY_1234567891111"
     ports:
-      - "8080:8080"
+      - "5120:5120"
 
   registration-frontend:
     build:
-      context: ./frontend/auth
+      context: ./frontend/
       dockerfile: Dockerfile
     depends_on:
       - registration-api
     ports:
-      - "80:80"
+      - "4200:4200"
 
 volumes:
   pgdata:

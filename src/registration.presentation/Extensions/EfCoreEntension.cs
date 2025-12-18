@@ -8,7 +8,8 @@ public static class EfCoreEntension
     {
         services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseNpgsql(configuration.GetConnectionString("db"));
+            options.UseNpgsql(
+                configuration.GetConnectionString("DefaultConnection"));
         });
 
         return services;

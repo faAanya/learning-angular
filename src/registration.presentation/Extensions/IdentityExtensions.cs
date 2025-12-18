@@ -41,27 +41,35 @@ public static class IdentityExtensions
         return services;
     }
 
-    public static IServiceCollection AddIdentityAuth(this IServiceCollection services, IConfiguration configuration)
+   public static IServiceCollection AddIdentityAuth(
+    this IServiceCollection services,
+    IConfiguration configuration)
+{
+    var jwtSecret = configuration["AppSettings:JWTSecret"];
+
+    if (string.IsNullOrWhiteSpace(jwtSecret))
+        throw new InvalidOperationException("JWTSecret is not configured");
+
+    services.AddAuthentication(options =>
     {
-        services.AddAuthentication(x =>
+        options.DefaultAuthenticateScheme =
+            options.DefaultChallengeScheme =
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            x.DefaultAuthenticateScheme = 
-                x.DefaultChallengeScheme = 
-                    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options =>
-        {
-            options.SaveToken = false;
-            options.TokenValidationParameters = new TokenValidationParameters()
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey =
-                    new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(configuration["AppSettings:JWTSecret"]!)),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-            };
-        });
-        
-        return services;
-    }
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey =
+                new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(jwtSecret)),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+    return services;
+}
 }
