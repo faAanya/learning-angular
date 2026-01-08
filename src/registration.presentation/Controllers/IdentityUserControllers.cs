@@ -30,7 +30,10 @@ public static class IdentityUserControllers
             };
             var result = await userManager.CreateAsync(newUser, registrationModel.Password);
 
-            await userManager.AddToRoleAsync(newUser, registrationModel.Role);
+            if (!await userManager.IsInRoleAsync(newUser, registrationModel.Role))
+            {
+                await userManager.AddToRoleAsync(newUser, registrationModel.Role);
+            }
             
             if (result.Succeeded)
             {

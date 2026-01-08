@@ -4,7 +4,7 @@ namespace registration.presentation.Extensions;
 
 public static class AppConfigExtensions
 {
-    public static WebApplication ConfigureCors(this WebApplication app, IConfiguration configuration)
+    public static WebApplication ConfigureCors(this WebApplication app)
     {
         app.UseCors(options =>
         {

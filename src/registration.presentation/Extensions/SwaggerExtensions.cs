@@ -1,5 +1,4 @@
 ﻿using Microsoft.OpenApi;
-using Microsoft.OpenApi.Models;
 
 namespace registration.presentation.Extensions
 {
@@ -20,19 +19,9 @@ namespace registration.presentation.Extensions
                     Description = "JWT Authorization header using the Bearer scheme.",
                 });
             
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+               options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
                 {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        new string[] {}
-                    }
+                    [new OpenApiSecuritySchemeReference("bearer", document)] = []
                 });
             });
 
