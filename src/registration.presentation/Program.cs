@@ -33,5 +33,6 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapIdentityApi<AppUser>();
 app.MapIdentityEndpoints()
-    .MapAccountEndpoints();
+    .MapAccountEndpoints()
+    .MapAuthorizationEndpoints();
 await app.RunAsync();

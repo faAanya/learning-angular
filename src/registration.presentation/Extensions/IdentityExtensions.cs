@@ -37,6 +37,11 @@ public static class IdentityExtensions
                 .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .Build();
+
+            options.AddPolicy("HasLibraryId", policy=> policy.RequireClaim("LibraryId"));
+            options.AddPolicy("FemaleOnly", policy=> policy.RequireClaim("Gender", "Female"));
+            options.AddPolicy("Under18", policy=> policy.RequireAssertion(context=>
+            int.Parse(context.User.Claims.First(x=>x.Type == "Age").Value) < 18));
         });
         return services;
     }
