@@ -21,7 +21,7 @@ namespace registration.presentation.Extensions
             
                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
                 {
-                    [new OpenApiSecuritySchemeReference("bearer", document)] = []
+                    [new OpenApiSecuritySchemeReference("Bearer", document)] = []
                 });
             });
 

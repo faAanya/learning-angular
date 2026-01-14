@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
 namespace registration.presentation.Controllers
@@ -28,18 +24,10 @@ namespace registration.presentation.Controllers
                 return "Library Member Only";
             });
 
-            app.MapGet("/female-techer-only", 
-            [Authorize(Policy = "FemaleOnly", 
-            Roles = "Teacher")] () =>
-            {
-                return "Library Member Only";
-            });
-
             app.MapGet("/under-18", 
-            [Authorize(Policy = "FemaleOnly")] 
             [Authorize(Policy = "Under18")] () =>
             {
-                return "Library Member Only";
+                return "Under 18";
             });
 
             return app;

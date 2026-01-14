@@ -12,8 +12,6 @@ import {User} from '../shared/services/user';
 export class Dashboard implements OnInit {
 
   constructor(
-    private router: Router,
-    private authService: Auth,
     private userService: User) {
   }
 
@@ -26,8 +24,4 @@ export class Dashboard implements OnInit {
          }
        })
     }
-  protected onLogout() {
-    this.authService.deleteToken();
-    this.router.navigateByUrl('/signin');
-  }
 }
