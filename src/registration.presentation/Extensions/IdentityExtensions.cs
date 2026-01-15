@@ -38,10 +38,10 @@ public static class IdentityExtensions
                 .RequireAuthenticatedUser()
                 .Build();
 
-            options.AddPolicy("HasLibraryId", policy=> policy.RequireClaim("LibraryId"));
-            options.AddPolicy("FemaleOnly", policy=> policy.RequireClaim("Gender", "Female"));
+            options.AddPolicy("HasLibraryId", policy=> policy.RequireClaim("libraryId"));
+            options.AddPolicy("FemaleOnly", policy=> policy.RequireClaim("gender", "Female"));
             options.AddPolicy("Under18", policy=> policy.RequireAssertion(context=>
-            int.Parse(context.User.Claims.First(x=>x.Type == "Age").Value) < 18));
+            int.Parse(context.User.Claims.First(x=>x.Type == "age").Value) < 18));
         });
         return services;
     }
@@ -71,7 +71,8 @@ public static class IdentityExtensions
                     Encoding.UTF8.GetBytes(jwtSecret)),
             ValidateIssuer = false,
             ValidateAudience = false,
-            ClockSkew = TimeSpan.Zero
+            ClockSkew = TimeSpan.Zero,
+            ValidateLifetime = true
         };
     });
 

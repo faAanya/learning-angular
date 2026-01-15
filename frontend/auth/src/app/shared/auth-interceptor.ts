@@ -1,15 +1,37 @@
 import {HttpHeaders, HttpInterceptorFn} from '@angular/common/http';
 import {inject} from '@angular/core';
 import {Auth} from './services/auth';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { tap } from 'rxjs';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(Auth);
+  const router = inject(Router); 
+  const toastr = inject(ToastrService)
 
   if(authService.isLoggedIn()) {
     const clonedReq = req.clone({
         headers: req.headers.set('Authorization', 'Bearer ' + authService.getToken()),
     })
-    return next(clonedReq);
+    return next(clonedReq).pipe(
+      tap(
+        {
+          error:(err:any)=>{
+            if(err.status == 401){
+              authService.deleteToken();
+              setTimeout(() => {
+                toastr.info('Please login again', 'Session Expired')
+              }, 1500);
+              router.navigateByUrl("signin");
+            }
+            else if(err.status == 403){
+                toastr.info('Ooops!', "It seems you're not authorized to perform the action")
+            }
+          }
+        }
+      )
+    );
   }
   else
     return next(req);

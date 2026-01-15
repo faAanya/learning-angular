@@ -60,26 +60,21 @@ public static class IdentityUserControllers
                 
                 var claims = new ClaimsIdentity(
                     [
-                        new Claim("UserId", user.Id),
-                        new Claim("Gender", user.Gender.ToString()),
-                        new Claim("Age", (DateTime.UtcNow.Year - user.DateOfBirth.Year).ToString()),
+                        new Claim("userId", user.Id),
+                        new Claim("gender", user.Gender.ToString()),
+                        new Claim("age", (DateTime.UtcNow.Year - user.DateOfBirth.Year).ToString()),
                         new Claim(ClaimTypes.Role, roles.First()),
                     ]);
 
                 if(user.LibraryId != null)
                 {
-                    claims.AddClaim(new Claim("LibraryId", user.LibraryId.ToString()!));
+                    claims.AddClaim(new Claim("libraryId", user.LibraryId.ToString()!));
                 }
-
-                 foreach (var role in roles)
-                    {
-                        claims.AddClaim(new Claim(ClaimTypes.Role, role));
-                    }
 
                 var tokenDescriptor = new SecurityTokenDescriptor()
                 {
                     Subject = claims,
-                    Expires = DateTime.UtcNow.AddMinutes(10),
+                    Expires = DateTime.UtcNow.AddMinutes(1),
                     SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256Signature)
                 };
 

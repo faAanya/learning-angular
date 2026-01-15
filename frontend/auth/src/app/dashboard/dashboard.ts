@@ -1,15 +1,16 @@
 import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
-import {Auth} from '../shared/services/auth';
 import {User} from '../shared/services/user';
+import { HiddenElements } from '../shared/directives/hidden-elements';
+import { claimReq } from '../shared/utils/claimReq-utils';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  imports: [HiddenElements],
   templateUrl: './dashboard.html',
   styles: ``,
 })
 export class Dashboard implements OnInit {
+  claimReq = claimReq;
 
   constructor(
     private userService: User) {
